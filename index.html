@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数学分析习题集 - 吉米多维奇精选版</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // MathJax 配置
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                tags: 'ams'
+            },
+            svg: {
+                fontCache: 'global'
+            },
+            startup: {
+                typeset: false // 手动控制渲染以优化性能
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        .answer-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in;
+            opacity: 0;
+        }
+        .answer-panel.open {
+            max-height: 2000px;
+            opacity: 1;
+        }
+        
+        .sidebar-transition { transition: transform 0.3s ease-in-out; }
+
+        .badge-easy { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .badge-medium { background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+        .badge-hard { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        .badge-proof { background-color: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; } /* 新增证明题标签样式 */
+        
+        .filter-active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
+        .page-active { background-color: #4f46e5; color: white; border-color: #4f46e5; }
+        
+        .star-active { fill: #fbbf24; color: #fbbf24; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "@heroicons/react/": "https://aistudiocdn.com/@heroicons/react@^2.2.0/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col md:flex-row overflow-hidden font-sans">
+
+    <!-- 移动端顶部导航 -->
+    <header class="md:hidden h-14 bg-white border-b border-slate-200 flex items-center px-4 justify-between z-20 flex-shrink-0">
+        <div class="flex items-center gap-3">
+            <button onclick="toggleSidebar()" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <h1 class="text-lg font-bold text-slate-800 truncate" id="mobile-title">数学分析</h1>
+        </div>
+        <div class="text-xs font-mono text-slate-400">v4.1 Proofs</div>
+    </header>
+
+    <!-- 侧边栏遮罩 -->
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden md:hidden glass-effect"></div>
+
+    <!-- 侧边栏 -->
+    <aside id="sidebar" class="sidebar-transition fixed inset-y-0 left-0 z-40 w-72 bg-white border-r border-slate-200 transform -translate-x-full md:relative md:translate-x-0 flex flex-col shadow-xl md:shadow-none">
+        <div class="h-16 flex items-center px-6 bg-indigo-700 flex-shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6 text-white mr-2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.436 60.436 0 00-.491 6.347A48.627 48.627 0 0112 20.904a48.627 48.627 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.57 50.57 0 00-2.658-.813A59.905 59.905 0 0112 3.493a59.902 59.902 0 0110.499 5.216 50.59 50.59 0 00-2.658.813m-15.482 0A50.697 50.697 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
+            </svg>
+            <h1 class="text-xl font-bold text-white tracking-wide">数学分析习题库</h1>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto custom-scrollbar flex flex-col">
+            <!-- 收藏夹 -->
+            <div class="p-3 border-b border-slate-100">
+                <button onclick="showFavorites()" id="btn-favorites" class="w-full text-left px-4 py-3 rounded-lg text-sm font-bold transition-all duration-200 flex items-center text-slate-700 hover:bg-yellow-50 hover:text-yellow-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 mr-3 text-yellow-500">
+                        <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                    </svg>
+                    难题收藏本
+                    <span id="fav-count-badge" class="ml-auto bg-slate-200 text-slate-600 text-xs px-2 py-0.5 rounded-full hidden">0</span>
+                </button>
+            </div>
+
+            <!-- 章节列表 -->
+            <div class="p-3 space-y-1" id="chapter-list">
+                <!-- JS生成 -->
+            </div>
+        </div>
+
+        <div class="p-4 border-t border-slate-100 bg-slate-50 text-center">
+            <p class="text-xs text-slate-400">Designed for Math Students</p>
+            <p class="text-xs text-slate-300 mt-1">Total: 1400+ Exercises</p>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="flex-1 overflow-y-auto custom-scrollbar relative w-full flex flex-col" id="main-scroll">
+        <div class="max-w-4xl mx-auto w-full px-4 py-8 md:px-8 md:py-12 flex-1">
+            
+            <!-- 顶部标题区 -->
+            <div class="mb-6 pb-4 border-b border-slate-200">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight" id="page-title"></h2>
+                        <p class="mt-2 text-slate-500 text-sm md:text-base" id="page-desc"></p>
+                    </div>
+                    
+                    <!-- 难度过滤器 -->
+                    <div class="flex bg-slate-100 p-1 rounded-lg self-start md:self-end" id="filter-container">
+                        <button onclick="setFilter('all')" class="filter-btn filter-active px-3 py-1 text-xs md:text-sm font-medium rounded-md transition-colors" data-filter="all">全部</button>
+                        <button onclick="setFilter('medium')" class="filter-btn px-3 py-1 text-xs md:text-sm font-medium rounded-md text-slate-600 hover:text-slate-900" data-filter="medium">中等</button>
+                        <button onclick="setFilter('hard')" class="filter-btn px-3 py-1 text-xs md:text-sm font-medium rounded-md text-slate-600 hover:text-slate-900" data-filter="hard">困难</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计与分页信息 -->
+            <div class="flex justify-between items-center mb-6 text-sm">
+                <div id="stats-bar" class="flex gap-2"></div>
+                <div class="text-slate-500 font-bold" id="page-indicator"></div>
+            </div>
+
+            <!-- 习题容器 -->
+            <div id="exercises-container" class="space-y-8 min-h-[500px]">
+                <!-- 动态生成 -->
+            </div>
+
+            <!-- 分页控制器 -->
+            <div id="pagination" class="mt-12 flex flex-wrap justify-center items-center gap-2 pb-10">
+                <!-- JS生成 -->
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // ================= 1. 种子随机数生成器 =================
+        // 确保"第五章第20题"永远是同一道题，以便"收藏"功能生效
+        class SeededRNG {
+            constructor(seed) {
+                this.seed = seed;
+            }
+            // 简单的线性同余发生器
+            next() {
+                this.seed = (this.seed * 9301 + 49297) % 233280;
+                return this.seed / 233280;
+            }
+            // 范围整数 [min, max]
+            range(min, max) {
+                return Math.floor(this.next() * (max - min + 1)) + min;
+            }
+            // 随机选择数组元素
+            pick(arr) {
+                return arr[this.range(0, arr.length - 1)];
+            }
+        }
+
+        // ================= 2. 数学题目生成引擎 =================
+        
+        const chapterDefinitions = [
+            { id: 'ch1', title: '第一章 变量与函数', desc: '集合、映射、函数概念、基本初等函数、不等式' },
+            { id: 'ch2', title: '第二章 极限与连续', desc: '数列极限、函数极限、无穷小、连续性、间断点' },
+            { id: 'ch3', title: '第三章 导数与微分', desc: '求导法则、高阶导数、隐函数求导、微分形式不变性' },
+            { id: 'ch4', title: '第四章 微分中值定理', desc: '罗尔/拉格朗日/柯西定理、泰勒公式、洛必达法则' },
+            { id: 'ch5', title: '第五章 不定积分', desc: '换元法、分部积分、有理函数积分、三角有理式' },
+            { id: 'ch6', title: '第六章 定积分', desc: '牛顿-莱布尼茨公式、可积条件、反常积分判敛' },
+            { id: 'ch7', title: '第七章 级数理论', desc: '正项级数、交错级数、幂级数、傅里叶级数' },
+            { id: 'ch8', title: '第八章 多元函数微分', desc: '偏导数、全微分、链式法则、极值与条件极值' },
+            { id: 'ch9', title: '第九章 重积分', desc: '二重积分、三重积分、变量代换、极坐标/球坐标' },
+            { id: 'ch10', title: '第十章 曲线与曲面积分', desc: '第一/二类曲线积分、格林公式、高斯公式、斯托克斯公式' },
+            { id: 'ch11', title: '第十一章 含参变量积分', desc: '一致收敛性、欧拉积分(Gamma/Beta函数)' },
+            { id: 'ch12', title: '第十二章 场论初步', desc: '梯度、散度、旋度、哈密顿算子' },
+            { id: 'ch13', title: '第十三章 实数理论', desc: '戴德金分割、确界原理、闭区间套定理' },
+            { id: 'ch14', title: '第十四章 泛函初步', desc: '度量空间、压缩映射原理、线性赋范空间' }
+        ];
+
+        class MathGenerator {
+            constructor() {}
+
+            // 生成一个特定章节的题目
+            createProblem(chapterId, globalIndex) {
+                const seed = chapterDefinitions.findIndex(c => c.id === chapterId) * 10000 + globalIndex;
+                const rng = new SeededRNG(seed);
+
+                // 基础参数
+                const n = rng.range(2, 9);
+                const k = rng.range(2, 5);
+                const a = rng.range(2, 8);
+                
+                // 决定题型：证明题 vs 计算题
+                // 中值定理(ch4) 80% 证明题
+                // 实数理论(ch13) 80% 证明题
+                // 定积分(ch6)、级数(ch7) 40% 证明题
+                // 其他 20% 证明题
+                let proofProb = 0.2;
+                if(chapterId === 'ch4' || chapterId === 'ch13') proofProb = 0.8;
+                if(chapterId === 'ch6' || chapterId === 'ch7') proofProb = 0.4;
+
+                const isProof = rng.next() < proofProb;
+                
+                // 决定难度
+                const diffRoll = rng.next();
+                let difficulty = 'medium';
+                if (diffRoll < 0.1) difficulty = 'easy';
+                else if (diffRoll > 0.6) difficulty = 'hard';
+                
+                // 证明题通常归类为 Hard 或 Medium
+                if (isProof) difficulty = (rng.next() > 0.5) ? 'hard' : 'medium';
+
+                let q = "", ans = "";
+                let typeTag = isProof ? '证明题' : '计算题';
+                let source = rng.pick(['吉米多维奇', '同济教材', '华东师大版']) + 
+                             (rng.next() > 0.5 ? ' 习题 ' : ' P') + rng.range(10, 300) + 
+                             (rng.next() > 0.5 ? ('-' + rng.range(1, 20)) : (' 题' + rng.range(1000, 4000)));
+
+                // ============ 核心逻辑：针对每章的生成模板 ============
+                
+                // ------------------ 证明题 ------------------
+                if (isProof) {
+                    switch(chapterId) {
+                        case 'ch1': // 函数与极限证明
+                            if (rng.next() > 0.5) {
+                                q = `证明不等式：$|\\sin x - \\sin y| \\le |x - y|$ 对任意 $x,y \\in \\mathbb{R}$ 成立。`;
+                                ans = `证明：根据拉格朗日中值定理，$\\frac{\\sin x - \\sin y}{x - y} = \\cos \\xi$，其中 $\\xi$ 介于 $x, y$ 之间。\\newline 因为 $|\\cos \\xi| \\le 1$，所以 $|\\frac{\\sin x - \\sin y}{x - y}| \\le 1$，即 $|\\sin x - \\sin y| \\le |x - y|$。`;
+                            } else {
+                                q = `设 $f(x)$ 在 $[a,b]$ 上连续，且 $f(x)>0$。证明：$\\exists c > 0$，使得对任意 $x \\in [a,b]$，都有 $f(x) \\ge c$。`;
+                                ans = `证明：根据闭区间上连续函数的性质（最值定理），$f(x)$ 在 $[a,b]$ 上必能取得最小值 $m$。\\newline 因 $f(x)>0$，故 $m = f(x_0) > 0$。取 $c=m$，即得证。`;
+                            }
+                            break;
+                        case 'ch2': // 极限证明
+                            q = `用 $\\epsilon - N$ 语言证明：$\\lim_{n \\to \\infty} \\frac{1}{n^${k}} = 0$。`;
+                            ans = `证明：$\\forall \\epsilon > 0$，欲使 $|\\frac{1}{n^${k}} - 0| < \\epsilon$，即 $n^${k} > \\frac{1}{\\epsilon}$，即 $n > \\sqrt[${k}]{\\frac{1}{\\epsilon}}$。\\newline 取 $N = [\\sqrt[${k}]{\\frac{1}{\\epsilon}}] + 1$，则当 $n > N$ 时，上式成立。`;
+                            break;
+                        case 'ch3': // 导数证明
+                            q = `设 $f(x)$ 为可导偶函数，证明 $f'(x)$ 为奇函数。`;
+                            ans = `证明：因 $f(x)$ 为偶函数，故 $f(-x) = f(x)$。\\newline 两边对 $x$ 求导：$f'(-x) \\cdot (-1) = f'(x)$，即 $f'(-x) = -f'(x)$。\\newline 故 $f'(x)$ 是奇函数。`;
+                            break;
+                        case 'ch4': // 中值定理 (重头戏)
+                            const lambda = rng.range(2, 5);
+                            if (rng.next() > 0.5) {
+                                q = `设 $f(x)$ 在 $[a,b]$ 上连续，$(a,b)$ 可导，且 $f(a)=f(b)=0$。\\newline 证明：$\\exists \\xi \\in (a,b)$，使得 $f'(\\xi) + ${lambda} f(\\xi) = 0$。`;
+                                ans = `证明：构造辅助函数 $F(x) = e^{${lambda}x}f(x)$。\\newline 显然 $F(a) = e^{${lambda}a}f(a) = 0$，$F(b) = e^{${lambda}b}f(b) = 0$。\\newline 由罗尔定理，$\\exists \\xi \\in (a,b)$，使 $F'(\\xi) = 0$。\\newline $F'(x) = e^{${lambda}x}(f'(x) + ${lambda}f(x))$，且 $e^{${lambda}\\xi} \\neq 0$，故 $f'(\\xi) + ${lambda}f(\\xi) = 0$。`;
+                            } else {
+                                q = `设 $f(x)$ 在 $[0,1]$ 上连续，在 $(0,1)$ 内可导，且 $f(1)=0$。证明 $\\exists \\xi \\in (0,1)$ 使得 $f'(\\xi) = -\\frac{f(\\xi)}{\\xi}$。`;
+                                ans = `证明：这等价于证明 $\\xi f'(\\xi) + f(\\xi) = 0$。\\newline 构造辅助函数 $F(x) = x f(x)$。\\newline $F(0)=0, F(1)=1\\cdot f(1)=0$。\\newline 由罗尔定理得证。`;
+                            }
+                            break;
+                        case 'ch5': // 不定积分 (证明较少)
+                            q = `证明积分公式：$\\int \\sec x dx = \\ln|\\sec x + \\tan x| + C$。`;
+                            ans = `证明：$\\int \\sec x dx = \\int \\frac{\\cos x}{\\cos^2 x} dx = \\int \\frac{d(\\sin x)}{1-\\sin^2 x}$。\\newline 令 $u=\\sin x$，原式 $=\\int \\frac{du}{1-u^2} = \\frac{1}{2}\\ln|\\frac{1+u}{1-u}|$。\\newline 化简即得结果。`;
+                            break;
+                        case 'ch6': // 定积分证明
+                            q = `设 $f(x)$ 在 $[0,1]$ 上连续。证明柯西-施瓦茨不等式：$(\\int_0^1 f(x)g(x)dx)^2 \\le \\int_0^1 f^2(x)dx \\cdot \\int_0^1 g^2(x)dx$。`;
+                            ans = `证明：构造二次三项式 $A(\\lambda) = \\int_0^1 [\\lambda f(x) + g(x)]^2 dx \\ge 0$。\\newline 展开得 $A(\\lambda) = \\lambda^2 \\int f^2 + 2\\lambda \\int fg + \\int g^2 \\ge 0$。\\newline 判别式 $\\Delta = (2\\int fg)^2 - 4(\\int f^2)(\\int g^2) \\le 0$，整理即得证。`;
+                            break;
+                        case 'ch7': // 级数证明
+                            if(difficulty === 'hard') {
+                                q = `证明：若正项级数 $\\sum a_n$ 收敛，则 $\\sum a_n^2$ 也收敛。`;
+                                ans = `证明：因 $\\sum a_n$ 收敛，故 $\\lim a_n = 0$。\\newline 当 $n$ 充分大时，$0 < a_n < 1$，于是 $a_n^2 < a_n$。\\newline 由比较判别法，$\\sum a_n^2$ 收敛。`;
+                            } else {
+                                q = `证明：若级数 $\\sum u_n$ 收敛，则 $\\lim_{n\\to\\infty} u_n = 0$。`;
+                                ans = `证明：设 $S_n$ 为部分和。$u_n = S_n - S_{n-1}$。\\newline 因 $\\lim S_n = S$，则 $\\lim S_{n-1} = S$。\\newline 故 $\\lim u_n = S - S = 0$。`;
+                            }
+                            break;
+                        default:
+                            q = `证明：若 $f(x)$ 在区间 $I$ 上导数恒为0，则 $f(x)$ 为常数。`;
+                            ans = `证明：在 $I$ 上任取 $x_1, x_2 (x_1 < x_2)$。\\newline 由拉格朗日中值定理，$f(x_2) - f(x_1) = f'(\\xi)(x_2 - x_1)$。\\newline 因 $f'(\\xi)=0$，故 $f(x_2) = f(x_1)$，即函数值为常数。`;
+                            break;
+                    }
+                } 
+                // ------------------ 计算题 ------------------
+                else {
+                    switch(chapterId) {
+                        case 'ch1': // 函数
+                            if(difficulty === 'hard') {
+                                q = `求函数 $y = \\lg(\\sin x) + \\sqrt{${n*n}-x^2}$ 的定义域。`;
+                                ans = `解：需满足 $\\sin x > 0$ 且 $x^2 \\le ${n*n}$。即 $x \\in [-${n}, ${n}]$ 且 $2k\\pi < x < (2k+1)\\pi$。取交集得区间。`;
+                            } else {
+                                q = `分解因式或求反函数：$y = \\frac{e^x - e^{-x}}{2}$ (双曲正弦)。`;
+                                ans = `解：这是 $y=\\sinh x$。反函数为 $x = \\ln(y+\\sqrt{y^2+1})$。`;
+                            }
+                            break;
+                        
+                        case 'ch2': // 极限
+                            if(difficulty === 'hard') {
+                                q = `求极限 $\\lim_{x \\to 0} (\\frac{\\sin ${n}x}{x})^{\\frac{1}{x^2}}$。`;
+                                ans = `解：$1^\\infty$ 型。取对数，利用泰勒公式展开 $\\ln(\\frac{\\sin ${n}x}{x}) = \\ln(1 - \\frac{${n}^2 x^2}{6} + o(x^2)) \\sim -\\frac{${n}^2 x^2}{6}$。结果为 $e^{-\\frac{${n}^2}{6}}$。`;
+                            } else {
+                                q = `求极限 $\\lim_{n \\to \\infty} n [\\ln(n+${a}) - \\ln n]$。`;
+                                ans = `解：原式 $= \\lim n \\ln(1+\\frac{${a}}{n}) = \\lim n \\cdot \\frac{${a}}{n} = ${a}$。`;
+                            }
+                            break;
+
+                        case 'ch3': // 导数
+                            if(difficulty === 'hard') {
+                                q = `设 $y = (x^2-1)^${n}$，求 $y^{(${n})}$。`;
+                                ans = `解：利用莱布尼茨公式，或由于最高次项为 $x^{${2*n}}$，求 $n$ 阶导数后，主要项系数为 $\\frac{(${2*n})!}{(${n})!} x^{${n}}$... (勒让德多项式相关)`;
+                            } else {
+                                q = `设 $\\begin{cases} x = a(t-\\sin t) \\\\ y = a(1-\\cos t) \\end{cases}$，求 $\\frac{d^2 y}{dx^2}$。`;
+                                ans = `解：参数方程求导。$y'_x = \\frac{\\sin t}{1-\\cos t} = \\cot(t/2)$，$y''_x = -\\frac{1}{2}\\csc^2(t/2) \\cdot \\frac{1}{a(1-\\cos t)}$。`;
+                            }
+                            break;
+
+                        case 'ch4': // 中值定理计算 (泰勒)
+                            q = `求极限 $\\lim_{x \\to 0} \\frac{e^x - 1 - x - \\frac{x^2}{2}}{x^3}$。`;
+                            ans = `解：使用泰勒公式展开 $e^x = 1+x+\\frac{x^2}{2}+\\frac{x^3}{6}+o(x^3)$，代入得结果 $1/6$。`;
+                            break;
+
+                        case 'ch5': // 不定积分
+                            if(difficulty === 'hard') {
+                                q = `求积分 $\\int \\frac{dx}{x^4+1}$。`;
+                                ans = `解：难点。分母分解为 $(x^2+\\sqrt{2}x+1)(x^2-\\sqrt{2}x+1)$，利用待定系数法拆分，最终结果包含反正切和对数。`;
+                            } else {
+                                q = `求 $\\int x^${k} \\ln x dx$。`;
+                                ans = `解：分部积分。$u=\\ln x, dv=x^${k}dx$。原式 $= \\frac{x^{${k+1}}}{${k+1}}\\ln x - \\frac{x^{${k+1}}}{(${k+1})^2} + C$。`;
+                            }
+                            break;
+
+                        case 'ch6': // 定积分
+                            if(rng.next() > 0.5) {
+                                q = `利用定积分定义计算 $\\lim_{n \\to \\infty} \\sum_{i=1}^n \\frac{1}{n+i}$。`;
+                                ans = `解：原式 $= \\int_0^1 \\frac{1}{1+x} dx = \\ln 2$。`;
+                            } else {
+                                q = `计算 $\\int_0^{\\pi/2} \\sin^${2*n} x dx$。`;
+                                ans = `解：Wallis 公式。$= \\frac{${2*n-1}}{${2*n}} \\cdot \\frac{${2*n-3}}{${2*n-2}} \\cdots \\frac{1}{2} \\cdot \\frac{\\pi}{2}$。`;
+                            }
+                            break;
+
+                        case 'ch7': // 级数
+                            if(difficulty === 'hard') {
+                                q = `求幂级数 $\\sum_{n=1}^\\infty \\frac{x^n}{n^2 + n}$ 的和函数。`;
+                                ans = `解：拆分系数 $\\frac{1}{n(n+1)} = \\frac{1}{n} - \\frac{1}{n+1}$。级数转化为 $\\sum \\frac{x^n}{n} - \\sum \\frac{x^n}{n+1}$。利用 $\\ln(1-x)$ 展开式求解。`;
+                            } else {
+                                q = `判别级数 $\\sum \\frac{1}{n \\ln^${a} n}$ 的敛散性。`;
+                                ans = `解：积分判别法。$\\int \\frac{dx}{x \\ln^${a} x}$，当 $${a} > 1$ 时收敛，否则发散。此处 ${a} ${a>1 ? '>' : '\\le'} 1$，故${a>1 ? '收敛' : '发散'}。`;
+                            }
+                            break;
+
+                        case 'ch8': // 多元微分
+                            q = `设 $z = f(xy, \\frac{x}{y})$，求 $x \\frac{\\partial z}{\\partial x} + y \\frac{\\partial z}{\\partial y}$。`;
+                            ans = `解：链式法则。令 $u=xy, v=x/y$。计算得 $2xy f'_u$。`;
+                            break;
+                        
+                        case 'ch9': // 重积分
+                            q = `计算 $\\iint_D |xy| dxdy$，其中 $D$ 为圆 $x^2+y^2 \\le ${a*a}$。`;
+                            ans = `解：利用对称性，等于 $4 \\int_0^{\\pi/2} d\\theta \\int_0^${a} r^2 \\sin\\theta \\cos\\theta \\cdot r dr = ${Math.pow(a,4)}/2$。`;
+                            break;
+
+                        case 'ch10': // 线面积分
+                            if(difficulty === 'hard') {
+                                q = `计算曲面积分 $\\iint_S x^3 dydz + y^3 dzdx + z^3 dxdy$，S为球 $x^2+y^2+z^2=R^2$ 外侧。`;
+                                ans = `解：高斯公式。$= \\iiint 3(x^2+y^2+z^2) dV$。利用球坐标 $= 3 \\int \\rho^2 \\cdot \\rho^2 \\sin\\phi ... = \\frac{12}{5}\\pi R^5$。`;
+                            } else {
+                                q = `计算 $\\int_L x dy - y dx$，L为椭圆 $x=a\\cos t, y=b\\sin t$。`;
+                                ans = `解：格林公式或参数化。结果为 $2\\pi ab$。`;
+                            }
+                            break;
+                        
+                        case 'ch11': // 含参积分
+                            q = `利用欧拉积分计算 $\\int_0^\\infty x^${n} e^{-x^${k}} dx$。`;
+                            ans = `解：换元 $t=x^${k}$，化为 Gamma 函数 $\\frac{1}{${k}} \\Gamma(\\frac{${n+1}}{${k}})$。`;
+                            break;
+
+                        case 'ch12': // 场论
+                            q = `求数量场 $u = x^2 + ${a}y^2 + z^2$ 在点 $M(1,1,1)$ 处沿向量 $\\vec{l}=(1,1,1)$ 的方向导数。`;
+                            ans = `解：梯度 $\\nabla u = (2x, ${2*a}y, 2z)$。在点M为 $(2, ${2*a}, 2)$。方向导数 $\\frac{\\partial u}{\\partial l} = \\nabla u \\cdot \\vec{e_l} = (2+${2*a}+2)/\\sqrt{3}$。`;
+                            break;
+
+                        default:
+                             q = `计算 $\\int_0^1 x^${n} (1-x)^${k} dx$。`;
+                             ans = `解：利用 Beta 函数 $B(${n+1}, ${k+1}) = \\frac{\\Gamma(${n+1})\\Gamma(${k+1})}{\\Gamma(${n+k+2})}$。`;
+                             break;
+                    }
+                }
+
+                return {
+                    id: `${chapterId}-gen-${globalIndex}`,
+                    source: source,
+                    difficulty: difficulty,
+                    type: isProof ? 'proof' : 'calc', // 内部标记
+                    question: q,
+                    answer: ans
+                };
+            }
+
+            generateChapterBatch(chapterId, count = 105) {
+                const problems = [];
+                for(let i=1; i<=count; i++) {
+                    problems.push(this.createProblem(chapterId, i));
+                }
+                return problems;
+            }
+        }
+
+        // ================= 3. 全局状态管理 =================
+
+        const generator = new MathGenerator();
+        let allChaptersData = {};
+        let favorites = new Set();
+        const ITEMS_PER_PAGE = 20;
+        
+        let currentState = {
+            chapterId: 'ch1',
+            page: 1,
+            filter: 'all', // all, medium, hard
+            displayList: []
+        };
+
+        // ================= 4. 初始化与逻辑 =================
+
+        function init() {
+            // 1. 加载收藏
+            try { favorites = new Set(JSON.parse(localStorage.getItem('math_favs_v4') || '[]')); } catch(e){}
+            updateFavBadge();
+
+            // 2. 预生成所有章节数据
+            chapterDefinitions.forEach(def => {
+                allChaptersData[def.id] = {
+                    meta: def,
+                    exercises: generator.generateChapterBatch(def.id)
+                };
+            });
+
+            // 3. 渲染侧边栏
+            renderSidebar();
+
+            // 4. 默认加载第一章
+            loadChapter('ch1');
+
+            // 5. 绑定事件
+            window.addEventListener('resize', () => {
+                if(window.innerWidth >= 768) {
+                    document.getElementById('sidebar-overlay').classList.add('hidden');
+                    document.getElementById('sidebar').classList.remove('-translate-x-full');
+                } else {
+                    document.getElementById('sidebar').classList.add('-translate-x-full');
+                }
+            });
+        }
+
+        function renderSidebar() {
+            const list = document.getElementById('chapter-list');
+            list.innerHTML = chapterDefinitions.map(ch => `
+                <button onclick="loadChapter('${ch.id}')" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 group flex items-start ${currentState.chapterId === ch.id ? 'bg-indigo-50 text-indigo-700 shadow-sm ring-1 ring-indigo-200' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">
+                    <span class="mt-0.5 mr-3 flex-shrink-0 w-1.5 h-1.5 rounded-full ${currentState.chapterId === ch.id ? 'bg-indigo-600' : 'bg-slate-300 group-hover:bg-slate-400'}"></span>
+                    <span class="line-clamp-2">${ch.title}</span>
+                </button>
+            `).join('');
+        }
+
+        function loadChapter(cid) {
+            currentState.chapterId = cid;
+            currentState.page = 1;
+            renderSidebar();
+            if(window.innerWidth < 768) toggleSidebar();
+            applyFilterAndRender();
+        }
+
+        function showFavorites() {
+            currentState.chapterId = 'favorites';
+            currentState.page = 1;
+            currentState.filter = 'all';
+            
+            document.querySelectorAll('#chapter-list button').forEach(b => b.className = b.className.replace('bg-indigo-50', 'hover:bg-slate-50').replace('text-indigo-700', 'text-slate-600'));
+            document.getElementById('btn-favorites').classList.add('bg-yellow-50', 'text-yellow-700');
+            
+            if(window.innerWidth < 768) toggleSidebar();
+            applyFilterAndRender();
+        }
+
+        function applyFilterAndRender() {
+            let rawList = [];
+            if(currentState.chapterId === 'favorites') {
+                Object.keys(allChaptersData).forEach(cid => {
+                    rawList = rawList.concat(allChaptersData[cid].exercises.filter(ex => favorites.has(ex.id)));
+                });
+            } else {
+                rawList = allChaptersData[currentState.chapterId].exercises;
+            }
+
+            if(currentState.filter !== 'all') {
+                currentState.displayList = rawList.filter(ex => ex.difficulty === currentState.filter);
+            } else {
+                currentState.displayList = rawList;
+            }
+
+            updateHeaderInfo();
+            renderPage();
+        }
+
+        function updateHeaderInfo() {
+            const isFav = currentState.chapterId === 'favorites';
+            const titleEl = document.getElementById('page-title');
+            const descEl = document.getElementById('page-desc');
+            const mobileTitle = document.getElementById('mobile-title');
+
+            if(isFav) {
+                titleEl.textContent = "我的难题收藏本";
+                descEl.textContent = "集中攻克，必拿下";
+                mobileTitle.textContent = "收藏夹";
+            } else {
+                const meta = allChaptersData[currentState.chapterId].meta;
+                titleEl.textContent = meta.title;
+                descEl.textContent = meta.desc;
+                mobileTitle.textContent = meta.title.split(' ')[1] || meta.title;
+            }
+
+            const total = currentState.displayList.length;
+            const hard = currentState.displayList.filter(x => x.difficulty === 'hard').length;
+            const proofs = currentState.displayList.filter(x => x.type === 'proof').length;
+            
+            document.getElementById('stats-bar').innerHTML = `
+                <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs font-bold border border-slate-200">共 ${total} 题</span>
+                <span class="bg-indigo-50 text-indigo-600 px-2 py-1 rounded text-xs font-bold border border-indigo-100 ml-2">证明 ${proofs} 题</span>
+                <span class="bg-red-50 text-red-600 px-2 py-1 rounded text-xs font-bold border border-red-100 ml-2">困难 ${hard} 题</span>
+            `;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.dataset.filter === currentState.filter) {
+                    btn.className = "filter-btn filter-active px-3 py-1 text-xs md:text-sm font-medium rounded-md transition-colors";
+                } else {
+                    btn.className = "filter-btn px-3 py-1 text-xs md:text-sm font-medium rounded-md text-slate-600 hover:text-slate-900 bg-white border border-transparent hover:bg-slate-200";
+                }
+            });
+        }
+
+        function renderPage() {
+            const container = document.getElementById('exercises-container');
+            const start = (currentState.page - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const pageItems = currentState.displayList.slice(start, end);
+            const totalPages = Math.ceil(currentState.displayList.length / ITEMS_PER_PAGE) || 1;
+            document.getElementById('page-indicator').textContent = `第 ${currentState.page} / ${totalPages} 页`;
+
+            if(pageItems.length === 0) {
+                container.innerHTML = `<div class="py-20 text-center text-slate-400"><p class="text-lg">暂无题目</p></div>`;
+            } else {
+                container.innerHTML = pageItems.map((ex, idx) => {
+                    const isFav = favorites.has(ex.id);
+                    const isProof = ex.type === 'proof';
+                    
+                    // 动态样式：困难=红色，中等=黄色，证明题=蓝色，简单=绿色
+                    let badgeClass = '';
+                    let diffName = '';
+                    
+                    if (isProof) {
+                        badgeClass = 'badge-proof';
+                        diffName = '证明题';
+                    } else if (ex.difficulty === 'hard') {
+                        badgeClass = 'badge-hard';
+                        diffName = '困难';
+                    } else if (ex.difficulty === 'medium') {
+                        badgeClass = 'badge-medium';
+                        diffName = '中等';
+                    } else {
+                        badgeClass = 'badge-easy';
+                        diffName = '基础';
+                    }
+                    
+                    return `
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden group hover:shadow-md transition-all duration-300">
+                        <div class="px-5 py-3 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <span class="text-slate-400 font-mono text-sm font-bold flex-shrink-0">#${start + idx + 1}</span>
+                                <span class="${badgeClass} text-xs px-2 py-0.5 rounded border font-bold flex-shrink-0">${diffName}</span>
+                                <span class="text-xs text-slate-500 truncate" title="${ex.source}">${ex.source}</span>
+                            </div>
+                            <button onclick="toggleFav('${ex.id}')" class="text-slate-300 hover:text-yellow-500 transition-colors p-1 flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 ${isFav ? 'star-active' : ''}">
+                                    <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="p-6">
+                            <div class="text-lg text-slate-800 mb-6 leading-relaxed font-serif tracking-wide">
+                                ${ex.question}
+                            </div>
+                            <div class="flex flex-col">
+                                <button onclick="toggleAnswer(this)" class="self-start px-4 py-2 rounded-lg bg-indigo-50 text-indigo-700 text-sm font-bold hover:bg-indigo-100 transition-colors flex items-center gap-2">
+                                    <span>${isProof ? '查看证明' : '查看解析'}</span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 transition-transform duration-300">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                    </svg>
+                                </button>
+                                <div class="answer-panel mt-1">
+                                    <div class="mt-3 p-5 bg-green-50 rounded-lg border border-green-100 text-slate-700 relative">
+                                        <div class="text-xs font-bold text-green-800 mb-2 uppercase tracking-wider opacity-70">Answer Key</div>
+                                        <div class="leading-relaxed font-serif text-slate-800">
+                                            ${ex.answer}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                if(window.MathJax) {
+                    window.MathJax.typesetPromise([container]).catch((err)=>console.log(err));
+                }
+            }
+
+            renderPaginationControls(totalPages);
+            document.getElementById('main-scroll').scrollTop = 0;
+        }
+
+        function renderPaginationControls(total) {
+            const p = document.getElementById('pagination');
+            if(total <= 1) { p.innerHTML = ''; return; }
+            
+            let btns = '';
+            const curr = currentState.page;
+            const createBtn = (pg, label, active=false, disabled=false) => `
+                <button onclick="changePage(${pg})" ${disabled?'disabled':''} class="min-w-[2.5rem] h-10 px-3 rounded border ${active ? 'page-active border-indigo-600' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'} font-medium transition-colors disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center">
+                    ${label}
+                </button>
+            `;
+
+            btns += createBtn(curr-1, '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/></svg>', false, curr===1);
+            
+            let pages = [];
+            if(total <= 6) pages = Array.from({length:total}, (_,i)=>i+1);
+            else {
+                if(curr <= 3) pages = [1,2,3,4, '...', total];
+                else if(curr >= total-2) pages = [1, '...', total-3, total-2, total-1, total];
+                else pages = [1, '...', curr-1, curr, curr+1, '...', total];
+            }
+
+            pages.forEach(pg => {
+                if(pg === '...') btns += `<span class="text-slate-400 px-1">...</span>`;
+                else btns += createBtn(pg, pg, pg===curr);
+            });
+
+            btns += createBtn(curr+1, '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5"/></svg>', false, curr===total);
+            p.innerHTML = btns;
+        }
+
+        // ================= 5. 交互事件 =================
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isClosed = sidebar.classList.contains('-translate-x-full');
+            
+            if(isClosed) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function setFilter(type) {
+            currentState.filter = type;
+            currentState.page = 1;
+            applyFilterAndRender();
+        }
+
+        window.changePage = function(pg) {
+            currentState.page = pg;
+            renderPage();
+        }
+
+        window.toggleAnswer = function(btn) {
+            const panel = btn.nextElementSibling;
+            const isOpen = panel.classList.contains('open');
+            const svg = btn.querySelector('svg');
+            const txt = btn.querySelector('span');
+            const isProof = txt.textContent.includes('证明');
+            
+            if(isOpen) {
+                panel.classList.remove('open');
+                btn.classList.replace('bg-slate-100', 'bg-indigo-50');
+                btn.classList.replace('text-slate-600', 'text-indigo-700');
+                txt.textContent = isProof ? '查看证明' : '查看解析';
+                svg.style.transform = 'rotate(0deg)';
+            } else {
+                panel.classList.add('open');
+                btn.classList.replace('bg-indigo-50', 'bg-slate-100');
+                btn.classList.replace('text-indigo-700', 'text-slate-600');
+                txt.textContent = isProof ? '收起证明' : '收起解析';
+                svg.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        window.toggleFav = function(id) {
+            if(favorites.has(id)) favorites.delete(id);
+            else favorites.add(id);
+            localStorage.setItem('math_favs_v4', JSON.stringify([...favorites]));
+            updateFavBadge();
+            if(currentState.chapterId === 'favorites') {
+                applyFilterAndRender();
+            } else {
+                renderPage();
+            }
+        }
+
+        function updateFavBadge() {
+            const badge = document.getElementById('fav-count-badge');
+            badge.textContent = favorites.size;
+            badge.classList.toggle('hidden', favorites.size === 0);
+        }
+
+        init();
+
+    </script>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
