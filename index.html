@@ -52,8 +52,8 @@
         
         .star-active { fill: #fbbf24; color: #fbbf24; }
     </style>
-<<<<<<< HEAD
-=======
+<
+
 
 <link rel="stylesheet" href="/index.css">
 >>>>>>> 0832ba4384550dbb0837e1b64b6115df4879e78f
@@ -66,9 +66,9 @@
   }
 }
 </script>
-<<<<<<< HEAD
+<
 <link rel="stylesheet" href="/index.css">
-=======
+
   <script type="module" crossorigin src="/assets/index-B5Qt9EMX.js"></script>
 >>>>>>> 0832ba4384550dbb0837e1b64b6115df4879e78f
 </head>
@@ -163,7 +163,7 @@
     </main>
 
     <script>
-        // ================= 1. 种子随机数生成器 =================
+        // === 1. 种子随机数生成器 ===
         // 确保"第五章第20题"永远是同一道题，以便"收藏"功能生效
         class SeededRNG {
             constructor(seed) {
@@ -184,7 +184,7 @@
             }
         }
 
-        // ================= 2. 数学题目生成引擎 =================
+        // === 2. 数学题目生成引擎 ===
         
         const chapterDefinitions = [
             { id: 'ch1', title: '第一章 变量与函数', desc: '集合、映射、函数概念、基本初等函数、不等式' },
@@ -242,7 +242,7 @@
                              (rng.next() > 0.5 ? ' 习题 ' : ' P') + rng.range(10, 300) + 
                              (rng.next() > 0.5 ? ('-' + rng.range(1, 20)) : (' 题' + rng.range(1000, 4000)));
 
-                // ============ 核心逻辑：针对每章的生成模板 ============
+                // ===== 核心逻辑：针对每章的生成模板 =====
                 
                 // ------------------ 证明题 ------------------
                 if (isProof) {
@@ -421,7 +421,7 @@
             }
         }
 
-        // ================= 3. 全局状态管理 =================
+        // === 3. 全局状态管理 ===
 
         const generator = new MathGenerator();
         let allChaptersData = {};
@@ -435,7 +435,7 @@
             displayList: []
         };
 
-        // ================= 4. 初始化与逻辑 =================
+        // === 4. 初始化与逻辑 ===
 
         function init() {
             // 1. 加载收藏
@@ -664,7 +664,7 @@
             p.innerHTML = btns;
         }
 
-        // ================= 5. 交互事件 =================
+        // === 5. 交互事件 ===
 
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
@@ -734,9 +734,9 @@
         init();
 
     </script>
-<<<<<<< HEAD
+<
 <script type="module" src="/index.tsx"></script>
-=======
+
 >>>>>>> 0832ba4384550dbb0837e1b64b6115df4879e78f
 </body>
 </html>
